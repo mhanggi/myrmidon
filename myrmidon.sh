@@ -2,7 +2,7 @@
 cwd=$(echo $(dirname $0))
 
 # Use ~/.myrmidon-tasks.json as default, otherwise use incoming path
-config_file="${1:-"$HOME/.myrmidon-tasks.json"}"
+config_file="${1:-"$HOME/.config/myrmidon/tasks.json"}"
 tasks=$(cat $config_file)
 
 # Pass tasks to rofi, and get the output as the selected option
