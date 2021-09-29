@@ -23,7 +23,7 @@ Myrmidon currently depends on:
 
 Copy both shell scripts in the same directory (e.g: ~/bin)
 
-Define your tasks in a json file. The default location of the json file will be `$HOME/.myrmidon-tasks.json`, but you can pass an optional argument as a custom path for the configuration file (e.g: `./myrmidon.sh ~/my-custom-path/tasks.json`).
+Define your tasks in a json file. The default location of the json file will be `$HOME/.config/myrmidon/tasks.json`, but you can pass an optional argument as a custom path for the configuration file (e.g: `./myrmidon.sh ~/my-custom-path/tasks.json`).
 
 Each task is comprised of a `name`, `command` and whether or not it needs a confirmation screen (`confirm`):
 
@@ -33,7 +33,8 @@ Example:
 [
   {
     "name": "Area screenshot",
-    "command": "gnome-screenshot -a"
+    "command": "gnome-screenshot -a",
+    "notification": "Screenshot taken"
   },
   {
     "name": "Window screenshot",
@@ -64,45 +65,6 @@ For example, in `i3`:
 ```
 bindsym $mod+p exec --no-startup-id ~/bin/myrmidon.sh
 ```
-### Add notificatoin
-
-This is an attempt to integrate notification proposed in issue [#8](https://github.com/moustacheful/myrmidon/issues/8)
-
-This solution depends on [notify-send](https://manpages.ubuntu.com/manpages/xenial/man1/notify-send.1.html) and gnome icons.
-
-```json
-[
-  {
-    "name": "Area screenshot",
-    "command": "gnome-screenshot -a",
-    "notification": {
-        "text":"Area screenshot",
-        "icon":"xscreensaver",
-        "urgency":"low"
-          }
-  }
-]
-```
-
-One could add all options accepted by notify-send, just take care that the key must be **exactly** the long option.
-```
-$ notify-send --help
-Usage:
-  notify-send [OPTION…] <SUMMARY> [BODY] - create a notification
-
-Help Options:
-  -?, --help                        Show help options
-
-Application Options:
-  -u, --urgency=LEVEL               Specifies the urgency level (low, normal, critical).
-  -t, --expire-time=TIME            Specifies the timeout in milliseconds at which to expire the notification.
-  -a, --app-name=APP_NAME           Specifies the app name for the icon
-  -i, --icon=ICON[,ICON...]         Specifies an icon filename or stock icon to display.
-  -c, --category=TYPE[,TYPE...]     Specifies the notification category.
-  -h, --hint=TYPE:NAME:VALUE        Specifies basic extra data to pass. Valid types are int, double, string and byte.
-  -v, --version                     Version of the package.
-```
-
 ## Multiple config files
 
 As it is possible to provide an optional location of the config file, you can keep multiple keys for different task "categories", for example:

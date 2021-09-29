@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
-cwd=$(echo $(dirname $0))
 
-# Use ~/.myrmidon-tasks.json as default, otherwise use incoming path
+function confirm_action {
+  local message="${1:-"Confirm?"}"
+  local response=$(echo -e "No\nYes" | rofi -dmenu -i -p "$message ")
+
+  if [ "$response" = "Yes" ]; then
+    true;
+  else
+    false;
+  fi
+}
+
+# Use ~/.config/myrmidon/tasks.json as default, otherwise use incoming path
 config_file="${1:-"$HOME/.config/myrmidon/tasks.json"}"
 tasks=$(cat $config_file)
 
@@ -20,19 +30,16 @@ confirm=$(echo $task | jq ".confirm")
 
 # Check whether we need confirmation to run this task
 if [[ $confirm == "true" ]]; then
-  # Chain the confirm command before executing the selected command
-  confirm_script="$cwd/confirm.sh 'Confirm $selected?'"
-  eval "$confirm_script && \"$task_command\" > /dev/null &"
-else
-  eval "\"$task_command\" > /dev/null &"
+  if ! confirm_action 'Confirm $selected?'; then
+    exit
+  fi
 fi
+
+# Run the task
+eval "\"$task_command\" > /dev/null &"
 
 notification=$(echo $task | jq ".notification")
 if [ ! "$notification" == 'null' ]
 then
-    # extended notification text
-    notification_command=$(echo $notification | jq -r '. | "notify-send \"\(.text)\" " ')
-    # add options 
-    notification_command=${notification_command}$(echo $notification | jq --raw-output ' del( . .text ) ' | sed '1d;$d' | sed 's/[", ]//g;s/:/=/;s/^/--/' | xargs)
-    eval "$notification_command > /dev/null &"
+    eval "notify-send $notification > /dev/null &"
 fi
